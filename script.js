@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- 1. Menu Mobile ---
+    // --- 1. Menu Mobile e Scroll Suave ---
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav-links');
     const navLinks = document.querySelectorAll('.nav-links li');
@@ -15,6 +15,27 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         burger.classList.toggle('toggle');
+    });
+
+    // Scroll Suave para todos os links internos
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                // Fecha o menu mobile se estiver aberto
+                if (nav.classList.contains('nav-active')) {
+                    nav.classList.remove('nav-active');
+                    burger.classList.remove('toggle');
+                }
+            }
+        });
     });
 
 
@@ -196,19 +217,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             }).addTo(map).bindPopup("Você está aqui").openPopup();
 
-            // Busca focada em "Ecoponto" com identificador de app para evitar 403/CORS
-            const query = `https://nominatim.openstreetmap.org/search?format=json&q=Ecoponto&lat=${lat}&lon=${lon}&limit=20&addressdetails=1`;
+            // Busca focada em "Ecoponto" ou "Reciclagem" próxima às coordenadas, limitando o raio de busca via visualização do mapa
+            const query = `https://nominatim.openstreetmap.org/search?format=json&q=lixo+eletronico+reciclagem+ecoponto&lat=${lat}&lon=${lon}&limit=50&addressdetails=1&bounded=0`;
             const data = await fetchNominatim(query);
 
             if (!data || data.length === 0) {
-                listaPontos.innerHTML = '<p class="text-center p-4">Nenhum Ecoponto encontrado. Tente buscar uma região urbana mais próxima.</p>';
+                listaPontos.innerHTML = '<p class="text-center p-4">Nenhum ponto de coleta encontrado muito próximo. Tente buscar pelo nome da sua cidade ou bairro.</p>';
                 return;
             }
 
+            // Calcula distância e filtra os 5 mais próximos em um raio razoável (ex: 50km)
             const points = data.map(item => ({
                 ...item,
                 distance: calculateDistance(lat, lon, item.lat, item.lon)
-            })).sort((a, b) => a.distance - b.distance).slice(0, 3);
+            }))
+            .sort((a, b) => a.distance - b.distance)
+            .slice(0, 5);
 
             listaPontos.innerHTML = '';
             points.forEach(point => {
