@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Saiba como descartar seu lixo eletrônico corretamente. Um guia prático baseado no e-book de Pablo Alexandre de Vasconcelos.">
+    <title>E-Lixo: O Guia do Descarte Consciente</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Leaflet CSS (Mapa) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header & Navegação -->
+    <header id="header">
+        <nav class="container">
+            <div class="logo">
+                <i class="fas fa-recycle"></i> <span>E-Lixo<span>Consciente</span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#hero">Início</a></li>
+                <li><a href="#crisis">A Crise</a></li>
+                <li><a href="#danger">Riscos</a></li>
+                <li><a href="#stats">Estatísticas</a></li>
+                <li><a href="#guide">Guia Prático</a></li>
+                <li><a href="#contact">Contato</a></li>
+            </ul>
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="hero-section">
+            <div class="container hero-grid">
+                <div class="hero-content reveal">
+                    <h1>Lixo Eletrônico: O que fazer com seus aparelhos velhos?</h1>
+                    <p>Descubra como transformar o descarte tecnológico em um ato de preservação ambiental. Um guia completo para a era digital.</p>
+                    <div class="hero-btns">
+                        <a href="#guide" class="btn btn-primary">Começar Guia Prático</a>
+                        <a href="#crisis" class="btn btn-secondary">Saiba Mais</a>
+                    </div>
+                </div>
+                <div class="hero-image reveal">
+                    <img src="https://illustrations.popsy.co/green/abstract-art-4.svg" alt="Sustentabilidade Tecnológica">
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 1: A Crise Oculta -->
+        <section id="crisis" class="section-padding">
+            <div class="container">
+                <div class="section-header text-center reveal">
+                    <h2>A Crise Oculta</h2>
+                    <p>O que é e-lixo e por que ele é o resíduo que mais cresce no mundo.</p>
+                </div>
+                <div class="categories-grid">
+                    <div class="category-card reveal">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h3>Pequenos Equipamentos</h3>
+                        <p>Celulares, tablets, fones e câmeras digitais.</p>
+                    </div>
+                    <div class="category-card reveal">
+                        <i class="fas fa-laptop"></i>
+                        <h3>Equipamentos de TI</h3>
+                        <p>Computadores, monitores, impressoras e mouses.</p>
+                    </div>
+                    <div class="category-card reveal">
+                        <i class="fas fa-tv"></i>
+                        <h3>Telas e Monitores</h3>
+                        <p>Televisores antigos (CRT) e monitores LED/LCD.</p>
+                    </div>
+                    <div class="category-card reveal">
+                        <i class="fas fa-blender"></i>
+                        <h3>Eletrodomésticos</h3>
+                        <p>Micro-ondas, batedeiras e aspiradores de pó.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 2: O Perigo Químico -->
+        <section id="danger" class="section-padding bg-light">
+            <div class="container">
+                <div class="section-header text-center reveal">
+                    <h2>O Perigo Químico</h2>
+                    <p>Conheça os metais pesados e substâncias tóxicas que ameaçam a vida e o meio ambiente.</p>
+                </div>
+                <div class="danger-cards reveal">
+                    <div class="danger-card">
+                        <div class="card-icon"><i class="fas fa-brain"></i></div>
+                        <h3>Chumbo (Pb)</h3>
+                        <p><strong>Saúde:</strong> Afeta o sistema nervoso central e provoca déficits cognitivos permanentes, especialmente em crianças.</p>
+                        <p><strong>Ambiente:</strong> Metal persistente que contamina solos e entra na cadeia alimentar.</p>
+                    </div>
+                    <div class="danger-card">
+                        <div class="card-icon"><i class="fas fa-tint-slash"></i></div>
+                        <h3>Mercúrio (Hg)</h3>
+                        <p><strong>Saúde:</strong> Ataca funções cognitivas e pode atravessar a barreira placentária, atingindo o feto.</p>
+                        <p><strong>Ambiente:</strong> Um grama contamina milhões de litros de água, acumulando-se nos peixes.</p>
+                    </div>
+                    <div class="danger-card">
+                        <div class="card-icon"><i class="fas fa-bone"></i></div>
+                        <h3>Cádmio (Cd)</h3>
+                        <p><strong>Saúde:</strong> Aloja-se nos rins por décadas, causando falência renal e desmineralização óssea.</p>
+                        <p><strong>Ambiente:</strong> Facilmente absorvido por plantas, contaminando colheitas inteiras.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 3: Estatísticas -->
+        <section id="stats" class="section-padding stats-section bg-dark text-white">
+            <div class="container stats-grid">
+                <div class="stat-item reveal">
+                    <span class="stat-number" data-target="62">0</span><span class="stat-suffix">M</span>
+                    <p>Toneladas globais anuais</p>
+                    <small><em>Fonte: <a href="https://ewastemonitor.info/" target="_blank" style="color: inherit;">Global E-waste Monitor</a></em></small>
+                </div>
+                <div class="stat-item reveal">
+                    <span class="stat-number" data-target="2.4">0</span><span class="stat-suffix">M</span>
+                    <p>Toneladas apenas no Brasil</p>
+                    <small><em>Fonte: <a href="https://www.greeneletron.org.br/" target="_blank" style="color: inherit;">Green Eletron</a></em></small>
+                </div>
+                <div class="stat-item reveal">
+                    <span class="stat-number" data-target="3">0</span><span class="stat-suffix">%</span>
+                    <p>Taxa de reciclagem nacional</p>
+                    <small><em>Fonte: <a href="https://agenciabrasil.ebc.com.br/" target="_blank" style="color: inherit;">Agência Brasil</a></em></small>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 4: Guia Prático -->
+        <section id="guide" class="section-padding">
+            <div class="container">
+                <div class="section-header text-center reveal">
+                    <h2>Guia Prático de Descarte</h2>
+                    <p>Selecione uma categoria abaixo para visualizar as instruções de descarte seguro.</p>
+                </div>
+
+                <div class="guide-tabs-container reveal">
+                    <div class="guide-tabs">
+                        <button class="tab-btn active" data-device="smartphone"><i class="fas fa-mobile-alt"></i> Smartphones</button>
+                        <button class="tab-btn" data-device="notebook"><i class="fas fa-laptop"></i> Notebooks</button>
+                        <button class="tab-btn" data-device="pilhas"><i class="fas fa-battery-half"></i> Pilhas</button>
+                        <button class="tab-btn" data-device="eletro"><i class="fas fa-plug"></i> Eletrodomésticos</button>
+                    </div>
+                    <div class="guide-content-panel">
+                        <div id="filter-result"></div>
+                    </div>
+                </div>
+
+                <div class="pharmacy-alert reveal">
+                    <div class="alert-icon"><i class="fas fa-first-aid"></i></div>
+                    <div class="alert-content">
+                        <h4>Dica: Pequenos eletrônicos em Farmácias</h4>
+                        <p>Muitas redes aceitam <strong>e-lixo pequeno</strong> (pilhas, baterias, cabos). Itens grandes requerem ecopontos especializados.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 5: Mapa de Coleta -->
+        <section id="mapa-coleta" class="section-padding bg-light">
+            <div class="container">
+                <div class="section-header text-center reveal">
+                    <h2>Encontre um Ponto de Coleta</h2>
+                    <p>Localize ecopontos e centros de reciclagem de forma segura e privada.</p>
+                </div>
+
+                <div class="map-controls reveal">
+                    <button id="btn-location" class="btn btn-primary">
+                        <i class="fas fa-location-arrow"></i> Usar minha localização
+                    </button>
+                    <div class="search-box">
+                        <input type="text" id="address-input" placeholder="Digite seu CEP ou endereço">
+                        <button id="btn-search" class="btn btn-secondary">Buscar</button>
+                    </div>
+                </div>
+
+                <div class="map-grid reveal">
+                    <div id="map-container">
+                        <div id="map"></div>
+                        <div id="map-loader" class="map-overlay d-none">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                    <div id="lista-pontos" class="lista-pontos">
+                        <div class="placeholder-msg">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <p>Busque um local para ver os pontos mais próximos.</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="privacy-note text-center"><i class="fas fa-user-shield"></i> Processamento local privado (LGPD).</p>
+            </div>
+        </section>
+
+        <!-- Seção 6: Formulário de Contato -->
+        <section id="contact" class="section-padding">
+            <div class="container">
+                <div class="contact-box reveal">
+                    <div class="section-header text-center">
+                        <h2>Dúvidas sobre Descarte?</h2>
+                        <p>Envie sua mensagem e ajudaremos você a encontrar o ponto de coleta mais próximo.</p>
+                    </div>
+                    <form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
+                        <input type="hidden" name="apikey" value="YOUR_ACCESS_KEY_HERE">
+                        <div class="form-group">
+                            <label>Nome Completo</label>
+                            <input type="text" name="name" required placeholder="Seu nome">
+                        </div>
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input type="email" name="email" required placeholder="seu@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Mensagem</label>
+                            <textarea name="message" rows="4" required placeholder="Como podemos ajudar?"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Enviar Mensagem</button>
+                        <div id="form-status"></div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="institutional-footer">
+        <div class="container footer-grid">
+            <!-- Coluna 1: Branding Institucional -->
+            <div class="footer-col branding">
+                <div class="unip-logo">
+                    <i class="fas fa-university"></i>
+                    <h3>UNIP<span>2026</span></h3>
+                </div>
+                <p>Projeto acadêmico focado em sustentabilidade tecnológica e conscientização ambiental.</p>
+                <p class="copyright">&copy; 2026 Todos os direitos reservados.</p>
+            </div>
+
+            <!-- Coluna 2: Navegação Rápida -->
+            <div class="footer-col links">
+                <h4>Navegação</h4>
+                <ul>
+                    <li><a href="#hero">Início</a></li>
+                    <li><a href="#crisis">A Crise</a></li>
+                    <li><a href="#danger">Riscos Químicos</a></li>
+                    <li><a href="#guide">Guia de Descarte</a></li>
+                    <li><a href="#mapa-coleta">Encontre Ecopontos</a></li>
+                </ul>
+            </div>
+
+            <!-- Coluna 3: Autor e Conexão -->
+            <div class="footer-col developer">
+                <h4>Desenvolvedor</h4>
+                <div class="author-name">Pablo Alexandre de Vasconcelos</div>
+                <div class="social-links">
+                    <a href="https://github.com/PabloTechDev" target="_blank" class="social-icon github" title="GitHub Profissional">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="mailto:pablo.vasconcelos@aluno.unip.br" class="social-icon email" title="E-mail Acadêmico">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+                <p class="academic-info">Ciência da Computação | UNIP</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="script.js"></script>
+</body>
+</html>
