@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 if (response.status === 200) {
                     formStatus.style.color = "var(--primary-green)";
-                    formStatus.innerHTML = "Mensagem enviada com sucesso!";
+                    formStatus.innerHTML = "Feedback enviado com sucesso!";
                     form.reset();
                 } else {
                     formStatus.style.color = "red";
