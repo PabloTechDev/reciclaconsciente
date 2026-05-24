@@ -357,8 +357,17 @@ document.addEventListener("DOMContentLoaded", () => {
     let lastError;
     for (const endpoint of endpoints) {
       try {
-        const url = `${endpoint}?data=${encodeURIComponent(query)}`;
-        const response = await fetch(url);
+        // Enviando via POST para evitar o Erro 406 (Not Acceptable) e limites de URL
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            // Este Content-Type é "CORS-safe", ou seja, NÃO aciona o Preflight (OPTIONS)
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          // O query vai no corpo (body) da requisição, e não mais na URL
+          body: `data=${encodeURIComponent(query)}`,
+        });
+
         if (response.ok) {
           return await response.json();
         }
