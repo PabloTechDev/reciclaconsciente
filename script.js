@@ -334,14 +334,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // - Usa fetch normalmente
   // - Em modo file:// ou erro de CORS/origem, tenta JSONP
   async function fetchNominatim(url) {
-    const userAgent = 'ReciclaConsciente/1.0 (https://reciclaconsciente.vercel.app/)';
     try {
-      const response = await fetch(url, {
-        headers: { 
-          "Accept-Language": "pt-BR,pt;q=0.9",
-          "User-Agent": userAgent
-        },
-      });
+      const response = await fetch(url);
       if (!response.ok) throw new Error("Falha na rede");
       return await response.json();
     } catch (error) {
@@ -359,15 +353,12 @@ document.addEventListener("DOMContentLoaded", () => {
       "https://z.overpass-api.de/api/interpreter",
       "https://overpass.kumi.systems/api/interpreter",
     ];
-    const userAgent = 'ReciclaConsciente/1.0 (https://reciclaconsciente.vercel.app/)';
 
     let lastError;
     for (const endpoint of endpoints) {
       try {
         const url = `${endpoint}?data=${encodeURIComponent(query)}`;
-        const response = await fetch(url, {
-          headers: { "User-Agent": userAgent }
-        });
+        const response = await fetch(url);
         if (response.ok) {
           return await response.json();
         }
@@ -386,6 +377,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function buildOverpassQuery(lat, lon, radiusMeters) {
     return `
+/* Identificação: ReciclaConsciente/1.0 (https://reciclaconsciente.vercel.app/) */
 [out:json][timeout:25];
 (
   node["amenity"="recycling"](around:${radiusMeters},${lat},${lon});
