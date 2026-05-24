@@ -10,9 +10,9 @@
     <!-- Google Fonts teste!!!!!!!! -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2family=Inter:wght@300;400;600;800&family=Montserrat:wght@700&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome para Ícones -->
+    <!-- Font Awesome para ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Leaflet CSS (Mapa) -->
@@ -50,7 +50,7 @@
         <section id="hero" class="hero-section">
             <div class="container hero-grid">
                 <div class="hero-content reveal">
-                    <h1>Lixo Eletrônico: O que fazer com seus aparelhos velhos?</h1>
+                    <h1>Lixo Eletrônico: O que fazer com seus aparelhos velhos</h1>
                     <p>Descubra como transformar o descarte tecnológico em um ato de preservação ambiental. Um guia completo para a era digital.</p>
                     <div class="hero-btns">
                         <a href="#guide" class="btn btn-primary">Começar Guia Prático</a>
@@ -189,7 +189,7 @@
                         <i class="fas fa-location-arrow"></i> Usar minha localização
                     </button>
                     <div class="search-box">
-                        <input type="text" id="address-input" placeholder="Digite seu CEP ou endereço">
+                        <input type="text" id="address-input" placeholder="Digite seu endereço">
                         <button id="btn-search" class="btn btn-secondary">Buscar</button>
                     </div>
                 </div>
@@ -213,7 +213,7 @@
         </section>
 
         <!-- Seção 6: Download do Ebook -->
-        <section id="ebook-download" class="section-padding bg-light">
+        <section id="ebook-download" class="section-padding bg-light d-none">
             <div class="container">
                 <div class="section-header text-center reveal">
                     <h2>Ebook Completo em PDF</h2>
@@ -222,8 +222,8 @@
                 <div class="ebook-download-box reveal">
                     <h3>Guia Educativo sobre E-lixo</h3>
                     <p>Conteúdo com dados atualizados, impactos ambientais, legislação brasileira e passo a passo de descarte correto.</p>
-                    <a id="ebook-download-btn" class="btn btn-ebook-download is-locked" href="#contact" data-pdf-path="Lixo Eletrônico O Que Fazer Com Seus Aparelhos Tecnológicos Velhos.pdf">
-                        <i class="fas fa-lock"></i> Preencha o Feedback para Liberar o Ebook
+                    <a id="ebook-download-btn" class="btn btn-ebook-download" href="Lixo Eletrônico O Que Fazer Com Seus Aparelhos Tecnológicos Velhos.pdf" download>
+                        <i class="fas fa-file-pdf"></i> Download do Ebook (PDF)
                     </a>
                     <p id="ebook-download-lock-msg" class="ebook-unlock-note">
                         Envie seu feedback para desbloquear o ebook completo em PDF e apoiar a melhoria do projeto.
@@ -252,7 +252,7 @@
                         </div>
                         <div class="form-group">
                             <label>Seu Feedback</label>
-                            <textarea name="feedback" rows="4" required placeholder="Como foi sua experiência no site?"></textarea>
+                            <textarea name="feedback" rows="4" required placeholder="Como foi sua experiência no site"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary btn-block">Enviar Feedback</button>
                         <div id="form-status"></div>
@@ -261,6 +261,17 @@
             </div>
         </section>
     </main>
+
+    <div id="download-modal" class="modal-overlay d-none" role="dialog" aria-modal="true" aria-labelledby="download-modal-title">
+        <div class="modal-card">
+            <h3 id="download-modal-title">Feedback enviado com sucesso</h3>
+            <p>Seu envio foi confirmado. Deseja ir agora para a seção de download do ebook</p>
+            <div class="modal-actions">
+                <button id="modal-download-yes" class="btn btn-primary" type="button">Sim, ir para download</button>
+                <button id="modal-download-no" class="btn btn-secondary" type="button">Agora não</button>
+            </div>
+        </div>
+    </div>
 
     <footer class="institutional-footer">
         <div class="container footer-grid">
