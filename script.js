@@ -347,15 +347,23 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function fetchOverpass(query) {
-    // Mirrors com CORS nativo (Access-Control-Allow-Origin: *)
-    // Não bloqueiam IPs de cloud e funcionam direto do browser
-    const corsNativeEndpoints = [
-      "https://overpass.private.coffee/api/interpreter",
-      "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
-      "https://overpass.openstreetmap.ru/api/interpreter",
-    ];
+    // Em produção (Vercel): chama /overpass no próprio domínio.
+    // O vercel.json faz o rewrite para overpass-api.de via CDN — sem CORS, sem Lambda.
+    // Em desenvolvimento local (localhost / file://): chama direto.
+    const isLocal =
+      window.location.protocol === "file:" ||
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
 
-    for (const endpoint of corsNativeEndpoints) {
+    const endpoints = isLocal
+      ? [
+          "https://overpass-api.de/api/interpreter",
+          "https://lz4.overpass-api.de/api/interpreter",
+          "https://z.overpass-api.de/api/interpreter",
+        ]
+      : ["/overpass"];
+
+    for (const endpoint of endpoints) {
       try {
         const response = await fetch(endpoint, {
           method: "POST",
@@ -372,24 +380,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Último recurso: corsproxy.io
-    try {
-      console.log("[Overpass] Tentando via corsproxy.io...");
-      const target = encodeURIComponent(
-        "https://overpass-api.de/api/interpreter",
-      );
-      const resp = await fetch(`https://corsproxy.io/?${target}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `data=${encodeURIComponent(query)}`,
-      });
-      if (resp.ok) return await resp.json();
-    } catch (err) {
-      console.warn("[Overpass] corsproxy.io falhou:", err.message);
-    }
-
     throw new Error(
-      "Todos os servidores Overpass falharam. Tente novamente em alguns instantes.",
+      "Serviço de busca temporariamente indisponível. Tente novamente em instantes.",
     );
   }
 
