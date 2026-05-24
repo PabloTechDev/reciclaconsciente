@@ -349,28 +349,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function fetchOverpass(query) {
-    const endpoints = [
-      "https://overpass-api.de/api/interpreter",
-      "https://lz4.overpass-api.de/api/interpreter",
-      "https://z.overpass-api.de/api/interpreter",
-      "https://overpass.kumi.systems/api/interpreter"
-    ];
+    // Usa o proxy Vercel (/api/overpass) para evitar bloqueio de CORS.
+    // A requisição sai do servidor, não do browser.
+    const response = await fetch("/api/overpass", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
+    });
 
-    let lastError;
-    for (const endpoint of endpoints) {
-      try {
-        const url = `${endpoint}?data=${encodeURIComponent(query)}`;
-        const response = await fetch(url);
-        if (response.ok) {
-          return await response.json();
-        }
-        console.warn(`Endpoint ${endpoint} falhou com status: ${response.status}`);
-      } catch (error) {
-        console.warn(`Erro ao conectar com ${endpoint}:`, error);
-        lastError = error;
-      }
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || `Proxy retornou status ${response.status}`);
     }
-    throw lastError || new Error("Todos os servidores da API Overpass falharam.");
+
+    return await response.json();
   }
 
   function buildOverpassQuery(lat, lon, radiusMeters) {
