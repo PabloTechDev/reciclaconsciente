@@ -188,9 +188,12 @@
                     <button id="btn-location" class="btn btn-primary">
                         <i class="fas fa-location-arrow"></i> Usar minha localização
                     </button>
-                    <div class="search-box">
-                        <input type="text" id="address-input" placeholder="Digite seu endereço">
-                        <button id="btn-search" class="btn btn-secondary">Buscar</button>
+                    <div class="search-wrapper">
+                        <label for="address-input" class="search-label">Digite seu endereço completo</label>
+                        <div class="search-box">
+                            <input type="text" id="address-input" placeholder="Ex: Rua, 123, Cidade">
+                            <button id="btn-search" class="btn btn-secondary">Buscar</button>
+                        </div>
                     </div>
                 </div>
 
@@ -237,13 +240,13 @@
             <div class="container">
                 <div class="contact-box reveal">
                     <div class="section-header text-center">
-                        <h2>Sua Experiência é Importante</h2>
-                        <p>Conte-nos como foi sua experiência no site. Seu feedback nos ajuda a melhorar!</p>
+                        <h2>Envie seu Feedback e Acesse o Ebook Gratuitamente</h2>
+                        <p>Conte-nos como foi sua experiência no site. Ao finalizar o envio do formulário, você receberá acesso ao nosso Ebook Educativo completo!</p>
                     </div>
                     <form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
                         <input type="hidden" name="apikey" value="88d6f4c3-0024-40d1-a416-508a5edb80ae">
                         <div class="form-group">
-                            <label>Nome ou Instituição</label>
+                            <label class="nomeinstituição">Nome ou Instituição</label>
                             <input type="text" name="name" placeholder="Seu nome/nome da instituição">
                         </div>
                         <div class="form-group">
