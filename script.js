@@ -347,6 +347,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function fetchOverpass(query) {
+    // Em produção (Vercel), usa o proxy serverless local para evitar CORS.
+    // Em desenvolvimento local (file:// ou localhost), tenta direto.
+    const isLocal =
+      window.location.protocol === "file:" ||
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
+
+    if (!isLocal) {
+      // ✅ PRODUÇÃO: chama o proxy /api/overpass no próprio domínio
+      const response = await fetch("/api/overpass", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query }),
+      });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(
+          err.error || `Proxy falhou com status ${response.status}`,
+        );
+      }
+      return await response.json();
+    }
+
+    // 🔧 DESENVOLVIMENTO LOCAL: tenta direto nos endpoints
     const endpoints = [
       "https://overpass-api.de/api/interpreter",
       "https://lz4.overpass-api.de/api/interpreter",
@@ -357,20 +381,12 @@ document.addEventListener("DOMContentLoaded", () => {
     let lastError;
     for (const endpoint of endpoints) {
       try {
-        // Enviando via POST para evitar o Erro 406 (Not Acceptable) e limites de URL
         const response = await fetch(endpoint, {
           method: "POST",
-          headers: {
-            // Este Content-Type é "CORS-safe", ou seja, NÃO aciona o Preflight (OPTIONS)
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          // O query vai no corpo (body) da requisição, e não mais na URL
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: `data=${encodeURIComponent(query)}`,
         });
-
-        if (response.ok) {
-          return await response.json();
-        }
+        if (response.ok) return await response.json();
         console.warn(
           `Endpoint ${endpoint} falhou com status: ${response.status}`,
         );
