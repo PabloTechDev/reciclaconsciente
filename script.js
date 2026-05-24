@@ -17,26 +17,49 @@ document.addEventListener('DOMContentLoaded', () => {
         burger.classList.toggle('toggle');
     });
 
-    // Scroll Suave para todos os links internos
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            if (targetId === '#') return;
-            const targetElement = document.querySelector(targetId);
-            if (targetElement) {
-                targetElement.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-                // Fecha o menu mobile se estiver aberto
-                if (nav.classList.contains('nav-active')) {
-                    nav.classList.remove('nav-active');
-                    burger.classList.remove('toggle');
-                }
-            }
+    // Scroll suave com compensação do header fixo (header + footer links internos)
+    const header = document.getElementById('header');
+
+    function smoothScrollToHash(hash, shouldUpdateHistory = true) {
+        if (!hash || hash === '#') return;
+        const targetElement = document.querySelector(hash);
+        if (!targetElement) return;
+
+        const headerOffset = header ? header.offsetHeight + 10 : 0;
+        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: Math.max(targetPosition, 0),
+            behavior: 'smooth'
         });
+
+        if (shouldUpdateHistory) {
+            history.pushState(null, '', hash);
+        }
+    }
+
+    document.addEventListener('click', (e) => {
+        const anchor = e.target.closest('a[href^="#"]');
+        if (!anchor) return;
+
+        const targetId = anchor.getAttribute('href');
+        if (!targetId || targetId === '#') return;
+        if (!document.querySelector(targetId)) return;
+
+        e.preventDefault();
+        smoothScrollToHash(targetId, true);
+
+        // Fecha o menu mobile se estiver aberto
+        if (nav.classList.contains('nav-active')) {
+            nav.classList.remove('nav-active');
+            burger.classList.remove('toggle');
+        }
     });
+
+    // Ajusta o posicionamento ao abrir com hash na URL
+    if (window.location.hash) {
+        setTimeout(() => smoothScrollToHash(window.location.hash, false), 80);
+    }
 
 
     // --- 2. Guia Prático (Abas) ---
@@ -175,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapLoader = document.getElementById('map-loader');
     const listaPontos = document.getElementById('lista-pontos');
     const addressInput = document.getElementById('address-input');
+    const isFileProtocol = window.location.protocol === 'file:';
 
     function initMap() {
         if (map) return;
@@ -186,17 +210,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initMap();
 
-    // Função robusta de Fetch para Nominatim (Evita CORS em alguns cenários e segue política de uso)
-    async function fetchNominatim(url) {
-        const response = await fetch(url, {
-            headers: {
-                'Accept-Language': 'pt-BR,pt;q=0.9',
-                // Identificando a requisição para evitar bloqueios automáticos de bots
-                'Referer': window.location.href 
-            }
+    function addLocalModeNotice() {
+        if (!isFileProtocol) return;
+        const mapSection = document.querySelector('#mapa-coleta .container');
+        if (!mapSection || mapSection.querySelector('.local-mode-note')) return;
+
+        const note = document.createElement('p');
+        note.className = 'local-mode-note text-center';
+        note.innerHTML = 'Modo local detectado (`file://`). Se a busca falhar no seu navegador, abra este site em <strong>http://localhost</strong> para evitar bloqueios de segurança.';
+        mapSection.appendChild(note);
+    }
+
+    function fetchNominatimJsonp(url) {
+        return new Promise((resolve, reject) => {
+            const callbackName = `nominatimCb_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+            const script = document.createElement('script');
+
+            const cleanup = () => {
+                delete window[callbackName];
+                if (script.parentNode) script.parentNode.removeChild(script);
+            };
+
+            window[callbackName] = (data) => {
+                cleanup();
+                resolve(data);
+            };
+
+            script.onerror = () => {
+                cleanup();
+                reject(new Error('Falha ao consultar Nominatim via JSONP.'));
+            };
+
+            const separator = url.includes('?') ? '&' : '?';
+            script.src = `${url}${separator}json_callback=${callbackName}`;
+            document.head.appendChild(script);
         });
-        if (!response.ok) throw new Error('Falha na rede');
-        return await response.json();
+    }
+
+    // Função robusta para Nominatim:
+    // - Usa fetch normalmente
+    // - Em modo file:// ou erro de CORS/origem, tenta JSONP
+    async function fetchNominatim(url) {
+        try {
+            const response = await fetch(url, {
+                headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
+            });
+            if (!response.ok) throw new Error('Falha na rede');
+            return await response.json();
+        } catch (error) {
+            if (isFileProtocol) {
+                return await fetchNominatimJsonp(url);
+            }
+            throw error;
+        }
     }
 
     async function findNearbyPoints(lat, lon) {
@@ -275,21 +341,31 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     });
 
-    document.getElementById('btn-search').addEventListener('click', async () => {
+    async function searchAddress() {
         const query = addressInput.value;
         if (!query) return;
         mapLoader.classList.remove('d-none');
         try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
-            const data = await res.json();
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+            const data = await fetchNominatim(url);
             if (data.length > 0) findNearbyPoints(data[0].lat, data[0].lon);
             else alert("Endereço não encontrado.");
         } catch (e) {
-            alert("Erro na busca de endereço.");
+            alert("Erro na busca de endereço. Se estiver abrindo por arquivo local, use um servidor local (http://localhost).");
         } finally {
             mapLoader.classList.add('d-none');
         }
+    }
+
+    document.getElementById('btn-search').addEventListener('click', searchAddress);
+    addressInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            searchAddress();
+        }
     });
+
+    addLocalModeNotice();
 
     function calculateDistance(lat1, lon1, lat2, lon2) {
         const R = 6371;
