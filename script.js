@@ -334,9 +334,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // - Usa fetch normalmente
   // - Em modo file:// ou erro de CORS/origem, tenta JSONP
   async function fetchNominatim(url) {
+    const userAgent = 'ReciclaConsciente/1.0 (https://reciclaconsciente.vercel.app/)';
     try {
       const response = await fetch(url, {
-        headers: { "Accept-Language": "pt-BR,pt;q=0.9" },
+        headers: { 
+          "Accept-Language": "pt-BR,pt;q=0.9",
+          "User-Agent": userAgent
+        },
       });
       if (!response.ok) throw new Error("Falha na rede");
       return await response.json();
@@ -349,20 +353,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function fetchOverpass(query) {
-    // Usa o proxy Vercel (/api/overpass) para evitar bloqueio de CORS.
-    // A requisição sai do servidor, não do browser.
-    const response = await fetch("/api/overpass", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query }),
-    });
+    const endpoints = [
+      "https://overpass-api.de/api/interpreter",
+      "https://lz4.overpass-api.de/api/interpreter",
+      "https://z.overpass-api.de/api/interpreter",
+      "https://overpass.kumi.systems/api/interpreter",
+    ];
+    const userAgent = 'ReciclaConsciente/1.0 (https://reciclaconsciente.vercel.app/)';
 
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      throw new Error(err.error || `Proxy retornou status ${response.status}`);
+    let lastError;
+    for (const endpoint of endpoints) {
+      try {
+        const url = `${endpoint}?data=${encodeURIComponent(query)}`;
+        const response = await fetch(url, {
+          headers: { "User-Agent": userAgent }
+        });
+        if (response.ok) {
+          return await response.json();
+        }
+        console.warn(
+          `Endpoint ${endpoint} falhou com status: ${response.status}`,
+        );
+      } catch (error) {
+        console.warn(`Erro ao conectar com ${endpoint}:`, error);
+        lastError = error;
+      }
     }
-
-    return await response.json();
+    throw (
+      lastError || new Error("Todos os servidores da API Overpass falharam.")
+    );
   }
 
   function buildOverpassQuery(lat, lon, radiusMeters) {
