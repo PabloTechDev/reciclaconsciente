@@ -347,78 +347,55 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function fetchOverpass(query) {
-    // Em produção (Vercel), usa o proxy serverless local para evitar CORS.
-    // Em desenvolvimento local (file:// ou localhost), tenta direto.
-    const isLocal =
-      window.location.protocol === "file:" ||
-      window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1";
-
-    if (!isLocal) {
-      // ✅ PRODUÇÃO: chama o proxy /api/overpass no próprio domínio
-      const response = await fetch("/api/overpass", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query }),
-      });
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(
-          err.error || `Proxy falhou com status ${response.status}`,
-        );
-      }
-      return await response.json();
-    }
-
-    // 🔧 DESENVOLVIMENTO LOCAL: tenta direto nos endpoints
-    const endpoints = [
-      "https://overpass-api.de/api/interpreter",
-      "https://lz4.overpass-api.de/api/interpreter",
-      "https://z.overpass-api.de/api/interpreter",
-      "https://overpass.kumi.systems/api/interpreter",
+    // Mirrors com CORS nativo (Access-Control-Allow-Origin: *)
+    // Não bloqueiam IPs de cloud e funcionam direto do browser
+    const corsNativeEndpoints = [
+      "https://overpass.private.coffee/api/interpreter",
+      "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+      "https://overpass.openstreetmap.ru/api/interpreter",
     ];
 
-    let lastError;
-    for (const endpoint of endpoints) {
+    for (const endpoint of corsNativeEndpoints) {
       try {
         const response = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: `data=${encodeURIComponent(query)}`,
         });
-        if (response.ok) return await response.json();
-        console.warn(
-          `Endpoint ${endpoint} falhou com status: ${response.status}`,
-        );
-      } catch (error) {
-        console.warn(`Erro ao conectar com ${endpoint}:`, error);
-        lastError = error;
+        if (response.ok) {
+          console.log(`[Overpass] Sucesso via: ${endpoint}`);
+          return await response.json();
+        }
+        console.warn(`[Overpass] ${endpoint} → status ${response.status}`);
+      } catch (err) {
+        console.warn(`[Overpass] Falha em ${endpoint}:`, err.message);
       }
     }
-    throw (
-      lastError || new Error("Todos os servidores da API Overpass falharam.")
+
+    // Último recurso: corsproxy.io
+    try {
+      console.log("[Overpass] Tentando via corsproxy.io...");
+      const target = encodeURIComponent(
+        "https://overpass-api.de/api/interpreter",
+      );
+      const resp = await fetch(`https://corsproxy.io/?${target}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `data=${encodeURIComponent(query)}`,
+      });
+      if (resp.ok) return await resp.json();
+    } catch (err) {
+      console.warn("[Overpass] corsproxy.io falhou:", err.message);
+    }
+
+    throw new Error(
+      "Todos os servidores Overpass falharam. Tente novamente em alguns instantes.",
     );
   }
 
   function buildOverpassQuery(lat, lon, radiusMeters) {
-    return `
-/* Identificação: ReciclaConsciente/1.0 (https://reciclaconsciente.vercel.app/) */
-[out:json][timeout:25];
-(
-  node["amenity"="recycling"](around:${radiusMeters},${lat},${lon});
-  way["amenity"="recycling"](around:${radiusMeters},${lat},${lon});
-  relation["amenity"="recycling"](around:${radiusMeters},${lat},${lon});
-
-  node["recycling:electronics"="yes"](around:${radiusMeters},${lat},${lon});
-  way["recycling:electronics"="yes"](around:${radiusMeters},${lat},${lon});
-  relation["recycling:electronics"="yes"](around:${radiusMeters},${lat},${lon});
-
-  node["waste"="electronics"](around:${radiusMeters},${lat},${lon});
-  way["waste"="electronics"](around:${radiusMeters},${lat},${lon});
-  relation["waste"="electronics"](around:${radiusMeters},${lat},${lon});
-);
-out center tags;
-`;
+    // Sem comentário com URL — pode causar bloqueio em alguns servidores
+    return `[out:json][timeout:25];(node["amenity"="recycling"](around:${radiusMeters},${lat},${lon});way["amenity"="recycling"](around:${radiusMeters},${lat},${lon});node["recycling:electronics"="yes"](around:${radiusMeters},${lat},${lon});way["recycling:electronics"="yes"](around:${radiusMeters},${lat},${lon});node["waste"="electronics"](around:${radiusMeters},${lat},${lon}););out center tags;`;
   }
 
   function normalizeOverpassElements(elements, userLat, userLon) {
