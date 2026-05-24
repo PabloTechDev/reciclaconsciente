@@ -356,14 +356,28 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function fetchOverpass(query) {
-    const response = await fetch("https://overpass-api.de/api/interpreter", {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=UTF-8" },
-      body: query,
-    });
-    if (!response.ok)
-      throw new Error(`Falha na API Overpass (${response.status})`);
-    return await response.json();
+    const endpoints = [
+      "https://overpass-api.de/api/interpreter",
+      "https://lz4.overpass-api.de/api/interpreter",
+      "https://z.overpass-api.de/api/interpreter",
+      "https://overpass.kumi.systems/api/interpreter"
+    ];
+
+    let lastError;
+    for (const endpoint of endpoints) {
+      try {
+        const url = `${endpoint}?data=${encodeURIComponent(query)}`;
+        const response = await fetch(url);
+        if (response.ok) {
+          return await response.json();
+        }
+        console.warn(`Endpoint ${endpoint} falhou com status: ${response.status}`);
+      } catch (error) {
+        console.warn(`Erro ao conectar com ${endpoint}:`, error);
+        lastError = error;
+      }
+    }
+    throw lastError || new Error("Todos os servidores da API Overpass falharam.");
   }
 
   function buildOverpassQuery(lat, lon, radiusMeters) {
