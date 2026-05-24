@@ -2,7 +2,11 @@
   "rewrites": [
     {
       "source": "/overpass",
-      "destination": "https://overpass-api.de/api/interpreter"
+      "destination": "/api/overpass"
+    },
+    {
+      "source": "/nominatim",
+      "destination": "/api/nominatim"
     }
   ]
 }

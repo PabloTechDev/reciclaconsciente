@@ -334,12 +334,22 @@ document.addEventListener("DOMContentLoaded", () => {
   // - Usa fetch normalmente
   // - Em modo file:// ou erro de CORS/origem, tenta JSONP
   async function fetchNominatim(url) {
+    const isLocal =
+      window.location.protocol === "file:" ||
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
+
+    let finalUrl = url;
+    if (!isLocal && url.includes("nominatim.openstreetmap.org")) {
+      finalUrl = url.replace("https://nominatim.openstreetmap.org/search", "/nominatim");
+    }
+
     try {
-      const response = await fetch(url);
+      const response = await fetch(finalUrl);
       if (!response.ok) throw new Error("Falha na rede");
       return await response.json();
     } catch (error) {
-      if (isFileProtocol) {
+      if (isLocal) {
         return await fetchNominatimJsonp(url);
       }
       throw error;
@@ -347,9 +357,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function fetchOverpass(query) {
-    // Em produção (Vercel): chama /overpass no próprio domínio.
-    // O vercel.json faz o rewrite para overpass-api.de via CDN — sem CORS, sem Lambda.
-    // Em desenvolvimento local (localhost / file://): chama direto.
     const isLocal =
       window.location.protocol === "file:" ||
       window.location.hostname === "localhost" ||
@@ -365,13 +372,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     for (const endpoint of endpoints) {
       try {
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `data=${encodeURIComponent(query)}`,
-        });
+        let response;
+        if (endpoint === "/overpass") {
+          // Chamada via Proxy (GET para evitar problemas de POST/CORS em alguns browsers)
+          const url = `/overpass?data=${encodeURIComponent(query)}`;
+          response = await fetch(url);
+        } else {
+          // Chamada direta (POST simples)
+          response = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `data=${encodeURIComponent(query)}`,
+          });
+        }
+
         if (response.ok) {
-          console.log(`[Overpass] Sucesso via: ${endpoint}`);
           return await response.json();
         }
         console.warn(`[Overpass] ${endpoint} → status ${response.status}`);
@@ -380,9 +395,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    throw new Error(
-      "Serviço de busca temporariamente indisponível. Tente novamente em instantes.",
-    );
+    throw new Error("Serviço de busca temporariamente indisponível.");
   }
 
   function buildOverpassQuery(lat, lon, radiusMeters) {

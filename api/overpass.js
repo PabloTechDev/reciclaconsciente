@@ -1,18 +1,12 @@
 // api/overpass.js — Vercel Serverless Function
-// Atua como proxy para a Overpass API, resolvendo o bloqueio de CORS em produção.
+// Proxy para Overpass API para evitar CORS e adicionar identificação (User-Agent) no servidor.
 
 export default async function handler(req, res) {
-  // Permite apenas POST
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+  // Captura a query do corpo (POST) ou da URL (GET)
+  const query = req.body?.data || req.query?.data || req.body?.query || req.query?.query;
 
-  const { query } = req.body;
-
-  if (!query || typeof query !== "string") {
-    return res
-      .status(400)
-      .json({ error: "O parâmetro 'query' é obrigatório." });
+  if (!query) {
+    return res.status(400).json({ error: "O parâmetro 'data' ou 'query' é obrigatório." });
   }
 
   const endpoints = [
@@ -22,38 +16,33 @@ export default async function handler(req, res) {
     "https://overpass.kumi.systems/api/interpreter",
   ];
 
-  let lastError;
+  const userAgent = 'ReciclaConsciente/1.0 (https://reciclaconsciente.vercel.app/)';
 
   for (const endpoint of endpoints) {
     try {
-      const response = await fetch(endpoint, {
-        method: "POST",
+      const url = `${endpoint}?data=${encodeURIComponent(query)}`;
+      const response = await fetch(url, {
+        method: "GET",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: `data=${encodeURIComponent(query)}`,
+          "User-Agent": userAgent,
+          "Accept": "application/json"
+        }
       });
 
       if (response.ok) {
         const data = await response.json();
-        // Cabeçalho de segurança: só permite chamadas do próprio domínio
-        res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
+        // CORS headers para permitir o frontend chamar esta API
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        res.setHeader("Access-Control-Allow-Headers", "Content-Type");
         return res.status(200).json(data);
       }
 
-      console.warn(
-        `[Proxy] ${endpoint} respondeu com status ${response.status}`,
-      );
-      lastError = new Error(`Status ${response.status} em ${endpoint}`);
+      console.warn(`[Proxy] ${endpoint} falhou: ${response.status}`);
     } catch (error) {
-      console.warn(`[Proxy] Falha ao conectar com ${endpoint}:`, error.message);
-      lastError = error;
+      console.warn(`[Proxy] Erro em ${endpoint}:`, error.message);
     }
   }
 
-  // Todos os endpoints falharam
-  return res.status(502).json({
-    error: "Todos os servidores Overpass falharam.",
-    details: lastError?.message,
-  });
+  return res.status(502).json({ error: "Todos os servidores Overpass falharam." });
 }
