@@ -35,8 +35,8 @@
                 <li><a href="#danger">Riscos</a></li>
                 <li><a href="#stats">Estatísticas</a></li>
                 <li><a href="#guide">Guia Prático</a></li>
-                <li><a href="#contact">Feedback</a></li>
             </ul>
+            <a href="#contact" class="btn btn-primary header-feedback-btn">Feedback</a>
             <div class="burger">
                 <div class="line1"></div>
                 <div class="line2"></div>
@@ -217,14 +217,17 @@
             <div class="container">
                 <div class="section-header text-center reveal">
                     <h2>Ebook Completo em PDF</h2>
-                    <p>Baixe o material completo para leitura e compartilhamento na sua comunidade.</p>
+                    <p>Preencha e envie o formulário de feedback para liberar o download do ebook completo.</p>
                 </div>
                 <div class="ebook-download-box reveal">
                     <h3>Guia Educativo sobre E-lixo</h3>
-                    <p>Conteúdo com dados atualizados, legislação, riscos ambientais e passo a passo de descarte correto.</p>
-                    <a class="btn btn-ebook-download" href="Lixo Eletrônico O Que Fazer Com Seus Aparelhos Tecnológicos Velhos.pdf" download>
-                        <i class="fas fa-file-pdf"></i> Download do Ebook (PDF)
+                    <p>Conteúdo com dados atualizados, impactos ambientais, legislação brasileira e passo a passo de descarte correto.</p>
+                    <a id="ebook-download-btn" class="btn btn-ebook-download is-locked" href="#contact" data-pdf-path="Lixo Eletrônico O Que Fazer Com Seus Aparelhos Tecnológicos Velhos.pdf">
+                        <i class="fas fa-lock"></i> Preencha o Feedback para Liberar o Ebook
                     </a>
+                    <p id="ebook-download-lock-msg" class="ebook-unlock-note">
+                        Envie seu feedback para desbloquear o ebook completo em PDF e apoiar a melhoria do projeto.
+                    </p>
                 </div>
             </div>
         </section>

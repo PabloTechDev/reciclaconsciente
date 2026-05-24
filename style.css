@@ -121,6 +121,12 @@ nav {
     transform: translateY(-2px);
 }
 
+.header-feedback-btn {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+    margin-left: 20px;
+}
+
 .burger {
     display: none;
     cursor: pointer;
@@ -485,6 +491,22 @@ nav {
     transform: translateY(-3px) scale(1.02);
 }
 
+.btn-ebook-download.is-locked {
+    background: #b7c3cf;
+    box-shadow: none;
+}
+
+.btn-ebook-download.is-locked:hover {
+    background: #aab8c6;
+    transform: none;
+}
+
+.ebook-unlock-note {
+    margin-top: 16px;
+    color: var(--text-light);
+    font-size: 0.95rem;
+}
+
 .local-mode-note {
     margin-top: 18px;
     color: #4e4e4e;
@@ -580,7 +602,12 @@ nav {
 
 @media (max-width: 768px) {
     .hero-content h1 { font-size: 2.5rem; }
-    .nav-links { display: none; } /* Hambúrguer ativado via JS na versão completa */
+    .nav-links { display: none; } /* Hamburguer ativado via JS na versao completa */
+    .header-feedback-btn {
+        margin-left: auto;
+        margin-right: 12px;
+        padding: 10px 18px;
+    }
     .burger { display: block; }
 }
 

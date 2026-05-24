@@ -163,6 +163,58 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 5. Formulário (Web3Forms) ---
     const form = document.getElementById('contact-form');
     const formStatus = document.getElementById('form-status');
+    const ebookDownloadBtn = document.getElementById('ebook-download-btn');
+    const ebookLockMsg = document.getElementById('ebook-download-lock-msg');
+    const EBOOK_UNLOCK_STORAGE_KEY = 'ebookDownloadUnlocked';
+
+    function setEbookLockedState() {
+        if (!ebookDownloadBtn) return;
+        ebookDownloadBtn.classList.add('is-locked');
+        ebookDownloadBtn.setAttribute('href', '#contact');
+        ebookDownloadBtn.innerHTML = '<i class="fas fa-lock"></i> Preencha o Feedback para Liberar o Ebook';
+        ebookDownloadBtn.removeAttribute('download');
+        if (ebookLockMsg) {
+            ebookLockMsg.textContent = 'Envie seu feedback para desbloquear o ebook completo em PDF e apoiar a melhoria do projeto.';
+        }
+    }
+
+    function setEbookUnlockedState() {
+        if (!ebookDownloadBtn) return;
+        const pdfPath = ebookDownloadBtn.dataset.pdfPath;
+        ebookDownloadBtn.classList.remove('is-locked');
+        ebookDownloadBtn.setAttribute('href', pdfPath || '#');
+        ebookDownloadBtn.setAttribute('download', '');
+        ebookDownloadBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Download do Ebook (PDF)';
+        if (ebookLockMsg) {
+            ebookLockMsg.textContent = 'Download liberado com sucesso. Obrigado pelo seu feedback!';
+        }
+    }
+
+    function unlockEbookDownload() {
+        setEbookUnlockedState();
+        try {
+            localStorage.setItem(EBOOK_UNLOCK_STORAGE_KEY, 'true');
+        } catch (e) {
+            // Ignora falhas de storage no modo privado/restrito.
+        }
+    }
+
+    function initializeEbookAccess() {
+        if (!ebookDownloadBtn) return;
+        try {
+            const isUnlocked = localStorage.getItem(EBOOK_UNLOCK_STORAGE_KEY) === 'true';
+            if (isUnlocked) {
+                setEbookUnlockedState();
+                return;
+            }
+        } catch (e) {
+            // Em caso de erro no storage, mantém bloqueado por padrão.
+        }
+        setEbookLockedState();
+    }
+
+    initializeEbookAccess();
+
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -179,6 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.status === 200) {
                     formStatus.style.color = "var(--primary-green)";
                     formStatus.innerHTML = "Feedback enviado com sucesso!";
+                    unlockEbookDownload();
                     form.reset();
                 } else {
                     formStatus.style.color = "red";
