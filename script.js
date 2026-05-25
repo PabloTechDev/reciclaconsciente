@@ -59,6 +59,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- 2. Guia Prático (Abas) ---
   const tabBtns = document.querySelectorAll(".tab-btn");
   const filterResult = document.getElementById("filter-result");
+  const guideContentPanel = document.querySelector(".guide-content-panel");
+  const guideTabs = document.querySelector(".guide-tabs");
 
   const disposalSteps = {
     smartphone: `
@@ -100,9 +102,37 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   function switchTab(device) {
-    tabBtns.forEach((btn) =>
-      btn.classList.toggle("active", btn.dataset.device === device),
-    );
+    const isMobile = window.innerWidth <= 768;
+    const clickedBtn = document.querySelector(`.tab-btn[data-device="${device}"]`);
+    const isAlreadyActive = clickedBtn.classList.contains("active");
+
+    // Lógica de Retração (Toggle) no Mobile
+    if (isMobile && isAlreadyActive && guideContentPanel.classList.contains("active")) {
+      clickedBtn.classList.remove("active");
+      guideContentPanel.classList.remove("active");
+      return;
+    }
+
+    // Resetar estados
+    tabBtns.forEach((btn) => btn.classList.remove("active"));
+    
+    // Ativar novo
+    clickedBtn.classList.add("active");
+
+    if (isMobile) {
+      // No mobile, movemos o painel para logo abaixo do botão (Acordeão)
+      clickedBtn.after(guideContentPanel);
+      // Força um reflow para a transição funcionar
+      guideContentPanel.offsetHeight; 
+      guideContentPanel.classList.add("active");
+    } else {
+      // No desktop, garantimos que o painel esteja em seu lugar original
+      if (guideContentPanel.previousElementSibling !== guideTabs) {
+        guideTabs.after(guideContentPanel);
+      }
+      guideContentPanel.classList.add("active");
+    }
+
     filterResult.style.opacity = 0;
     setTimeout(() => {
       filterResult.innerHTML = disposalSteps[device];
@@ -113,7 +143,11 @@ document.addEventListener("DOMContentLoaded", () => {
   tabBtns.forEach((btn) =>
     btn.addEventListener("click", () => switchTab(btn.dataset.device)),
   );
-  switchTab("smartphone");
+
+  // No desktop inicia com a primeira aba, no mobile inicia fechado para ser "retrátil"
+  if (window.innerWidth > 768) {
+    switchTab("smartphone");
+  }
 
   // --- 3. Intersection Observer (Animações) ---
   const revealElements = document.querySelectorAll(".reveal");

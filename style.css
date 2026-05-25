@@ -392,6 +392,7 @@ nav {
   align-items: center;
   justify-content: center;
   gap: 10px;
+  position: relative;
 }
 
 .tab-btn.active {
@@ -403,6 +404,68 @@ nav {
 .guide-content-panel {
   padding: 50px;
   min-height: 320px;
+  transition: max-height 0.5s cubic-bezier(0, 1, 0, 1), padding 0.3s ease, opacity 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .guide-tabs {
+    flex-direction: column;
+  }
+
+  .tab-btn {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 18px 20px;
+    border-bottom: 1px solid #eee;
+    border-left: 0;
+  }
+
+  .tab-btn.active {
+    border-bottom: 1px solid #eee;
+    border-left: 4px solid var(--primary-green);
+    background: #f9f9f9;
+  }
+  
+  .tab-btn::after {
+    content: '\f078'; /* fa-chevron-down */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    margin-left: auto;
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+    opacity: 0.5;
+  }
+  
+  .tab-btn.active::after {
+    transform: rotate(180deg);
+    opacity: 1;
+    color: var(--primary-green);
+  }
+
+  .guide-content-panel {
+    padding: 0 20px;
+    min-height: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  .guide-content-panel.active {
+    max-height: 1000px; /* Suficiente para o conteúdo */
+    padding: 30px 20px;
+    opacity: 1;
+    transition: max-height 0.8s ease-in-out, padding 0.3s ease, opacity 0.3s ease;
+  }
+  
+  #filter-result h4 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+  }
+  
+  #filter-result li {
+    font-size: 0.9rem;
+    padding: 10px 0;
+  }
 }
 #filter-result h4 {
   margin-bottom: 25px;
