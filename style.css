@@ -404,7 +404,10 @@ nav {
 .guide-content-panel {
   padding: 50px;
   min-height: 320px;
-  transition: max-height 0.5s cubic-bezier(0, 1, 0, 1), padding 0.3s ease, opacity 0.3s ease;
+  transition:
+    max-height 0.5s cubic-bezier(0, 1, 0, 1),
+    padding 0.3s ease,
+    opacity 0.3s ease;
 }
 
 @media (max-width: 768px) {
@@ -425,17 +428,17 @@ nav {
     border-left: 4px solid var(--primary-green);
     background: #f9f9f9;
   }
-  
+
   .tab-btn::after {
-    content: '\f078'; /* fa-chevron-down */
-    font-family: 'Font Awesome 6 Free';
+    content: "\f078"; /* fa-chevron-down */
+    font-family: "Font Awesome 6 Free";
     font-weight: 900;
     margin-left: auto;
     font-size: 0.8rem;
     transition: transform 0.3s ease;
     opacity: 0.5;
   }
-  
+
   .tab-btn.active::after {
     transform: rotate(180deg);
     opacity: 1;
@@ -454,14 +457,17 @@ nav {
     max-height: 1000px; /* Suficiente para o conteúdo */
     padding: 30px 20px;
     opacity: 1;
-    transition: max-height 0.8s ease-in-out, padding 0.3s ease, opacity 0.3s ease;
+    transition:
+      max-height 0.8s ease-in-out,
+      padding 0.3s ease,
+      opacity 0.3s ease;
   }
-  
+
   #filter-result h4 {
     font-size: 1.1rem;
     margin-bottom: 15px;
   }
-  
+
   #filter-result li {
     font-size: 0.9rem;
     padding: 10px 0;
@@ -929,6 +935,9 @@ nav {
   }
   .nav-links.nav-active li:nth-child(5) {
     animation-delay: 0.6s;
+  }
+  .nav-links.nav-active li:nth-child(6) {
+    animation-delay: 0.7s;
   }
   .header-feedback-btn {
     margin-left: auto;
