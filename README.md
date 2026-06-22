@@ -36,7 +36,7 @@ Este é um projeto acadêmico desenvolvido para a **UNIP (Universidade Paulista)
 
 ### Frontend
 - **HTML5 & CSS3:** Uso extensivo de variáveis CSS, Grid Layout, Flexbox e animações nativas.
-- **JavaScript (Vanilla):** Lógica pura para manipulação de DOM, integração de APIs e animações, sem dependência de frameworks pesados.
+- **JavaScript:** Lógica pura para manipulação de DOM, integração de APIs e animações, sem dependência de frameworks pesados.
 - **Leaflet.js:** Biblioteca open-source para mapas interativos.
 - **Font Awesome:** Ícones vetoriais para interface.
 - **Google Fonts:** Tipografia moderna (Inter e Montserrat).
